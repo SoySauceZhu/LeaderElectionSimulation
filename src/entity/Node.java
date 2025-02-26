@@ -31,7 +31,9 @@ public class Node {
     }
 
 
-    public void processMessages() {
+    public boolean processMessages() {
+        boolean sentMsg = false;
+
         if (buffer != null && !terminated) {
             Message message = buffer;
             buffer = null;
@@ -42,28 +44,31 @@ public class Node {
                 if (msgContent > curMaxId) {
                     curMaxId = msgContent;
                     sendMessage(message);
+                    sentMsg = true;
                 } else if (msgContent.equals(id)) { // If it receives its own ID, it wins
                     status = Status.LEADER;
                     this.leaderId = this.id;
                     System.out.println("Node " + id + " received its own ID. It is the leader.");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
                     terminate();
+                    sentMsg = true;
                 }
             } else if (msgType == MessageType.LEADER_ANNOUNCEMENT) {
                 status = Status.SUBORDINATE;
-                this.leaderId = this.id;
+                this.leaderId = msgContent;
 //                System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 sendMessage(message);
                 terminate();
+                sentMsg = true;
             }
-
-
         }
+
+        return sentMsg;
     }
 
     public void sendMessage(Message message) {
         next.messageQueue.add(message);
-        System.out.println("Node " + id + " sent message " + message);
+        System.out.println("Node " + id + " sent message to " + next.getId()  + " : "+ message);
     }
 
 
@@ -105,7 +110,6 @@ public class Node {
                 "id=" + id +
                 ", curMaxId=" + curMaxId +
                 ", status=" + status +
-//                ", next=" + next +
                 ", leaderId=" + leaderId +
                 ", terminated=" + terminated +
                 ", messageQueue=" + messageQueue +

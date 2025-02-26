@@ -2,12 +2,13 @@ import entity.Node;
 import service.LCR_ElectionService;
 import service.RandomNodes;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-        List<Node> nodes = (List<Node>) RandomNodes.generateNodes(10);
+        Collection<Node> nodes = RandomNodes.generateRandomNodes(10);
         System.out.println("Nodes generated:");
         for (Node node : nodes) {
             System.out.println(node);
