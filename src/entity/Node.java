@@ -21,15 +21,10 @@ public class Node {
         this.next = next;
     }
 
-    public void forward() {
+    public void start() {
         sendMessage(new Message(MessageType.ELECTION, curMaxId));
     }
 
-
-    public void sendMessage(Message message) {
-        next.messageQueue.add(message);
-        System.out.println("Node " + id + " sent message " + message);
-    }
 
     public void processMessages() {
         if (!messageQueue.isEmpty() && !terminated) {
@@ -46,15 +41,38 @@ public class Node {
                     this.leaderId = this.id;
                     System.out.println("Node " + id + " is the leader!");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
+                    terminate();
                 }
             } else if (msgType == MessageType.LEADER_ANNOUNCEMENT) {
                 status = Status.SUBORDINATE;
                 System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 sendMessage(message);
+                terminate();
             }
 
 
         }
+    }
+
+    public void sendMessage(Message message) {
+        next.messageQueue.add(message);
+        System.out.println("Node " + id + " sent message " + message);
+    }
+
+    public void processLeaderAnnouncement() {
+        if (!messageQueue.isEmpty()) {
+            Message msg = messageQueue.poll();
+            MessageType msgType = msg.getMsgType();
+            Integer msgContent = msg.getMsgContent();
+            if (msgType == MessageType.LEADER_ANNOUNCEMENT) { // Negative ID means leader announcement
+                System.out.println("Node " + id + " acknowledges Leader " + (leaderId));
+                next.messageQueue.add(msg);
+            }
+        }
+    }
+
+    public void terminate() {
+        terminated = true;
     }
 
     public Integer getId() {
