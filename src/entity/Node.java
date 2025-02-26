@@ -11,6 +11,7 @@ public class Node {
     private Integer leaderId;
     private boolean terminated = false;
     private Queue<Message> messageQueue = new LinkedList<>(); // Stores incoming messages
+    private Message buffer = null;
 
     public Node(int id) {
         this.id = id;
@@ -25,10 +26,15 @@ public class Node {
         sendMessage(new Message(MessageType.ELECTION, curMaxId));
     }
 
+    public void readBuffer() {
+        buffer = messageQueue.poll();
+    }
+
 
     public void processMessages() {
-        if (!messageQueue.isEmpty() && !terminated) {
-            Message message = messageQueue.poll();
+        if (buffer != null && !terminated) {
+            Message message = buffer;
+            buffer = null;
             MessageType msgType = message.getMsgType();
             Integer msgContent = message.getMsgContent();
 
@@ -39,13 +45,14 @@ public class Node {
                 } else if (msgContent.equals(id)) { // If it receives its own ID, it wins
                     status = Status.LEADER;
                     this.leaderId = this.id;
-                    System.out.println("Node " + id + " is the leader!");
+                    System.out.println("Node " + id + " received its own ID. It is the leader.");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
                     terminate();
                 }
             } else if (msgType == MessageType.LEADER_ANNOUNCEMENT) {
                 status = Status.SUBORDINATE;
-                System.out.println("Node " + id + " acknowledges Leader " + msgContent);
+                this.leaderId = this.id;
+//                System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 sendMessage(message);
                 terminate();
             }
@@ -59,17 +66,6 @@ public class Node {
         System.out.println("Node " + id + " sent message " + message);
     }
 
-    public void processLeaderAnnouncement() {
-        if (!messageQueue.isEmpty()) {
-            Message msg = messageQueue.poll();
-            MessageType msgType = msg.getMsgType();
-            Integer msgContent = msg.getMsgContent();
-            if (msgType == MessageType.LEADER_ANNOUNCEMENT) { // Negative ID means leader announcement
-                System.out.println("Node " + id + " acknowledges Leader " + (leaderId));
-                next.messageQueue.add(msg);
-            }
-        }
-    }
 
     public void terminate() {
         terminated = true;
@@ -109,9 +105,11 @@ public class Node {
                 "id=" + id +
                 ", curMaxId=" + curMaxId +
                 ", status=" + status +
-                ", next=" + next +
+//                ", next=" + next +
                 ", leaderId=" + leaderId +
                 ", terminated=" + terminated +
+                ", messageQueue=" + messageQueue +
+                ", buffer=" + buffer +
                 '}';
     }
 }

@@ -1,46 +1,22 @@
 import entity.Node;
-import entity.Status;
+import service.LCR_ElectionService;
+import service.RandomNodes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) {
-
-        List<Node> nodes = new ArrayList<>();
-        int[] nodeIds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-        for (int id : nodeIds) {
-            nodes.add(new Node(id));
-        }
-
-        for (int i = 0; i < nodes.size(); i++) {
-            Node node = nodes.get(i);
-            Node nextNode = nodes.get((i + 1) % nodes.size());
-            node.setNext(nextNode);
-        }
-
-        System.out.println("Starting the election process...");
-        boolean allTerminated = false;
-        int round = 0;
-
+        List<Node> nodes = (List<Node>) RandomNodes.generateNodes(10);
+        System.out.println("Nodes generated:");
         for (Node node : nodes) {
-            node.start();
+            System.out.println(node);
         }
 
-        while (!allTerminated) {
-            System.out.println("Round " + (++round));
 
-            for (Node node : nodes) {
-                node.processMessages();
-                if (node.getStatus() == Status.LEADER) {
-                    allTerminated = true;
-                }
-            }
-
-        }
-
-        System.out.println("Election process completed.");
+        System.out.println("Starting LCR Election Service...");
+        LCR_ElectionService lcrElectionService = new LCR_ElectionService(nodes);
+        lcrElectionService.startElection();
 
     }
 }
