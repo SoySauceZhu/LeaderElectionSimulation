@@ -12,6 +12,7 @@ public class Node {
     private boolean terminated = false;
     private Queue<Message> messageQueue = new LinkedList<>(); // Stores incoming messages
     private Message buffer = null;
+    private Message lastSentMessage = null;
 
     public Node(int id) {
         this.id = id;
@@ -22,8 +23,9 @@ public class Node {
         this.next = next;
     }
 
-    public void start() {
+    public boolean start() {
         sendMessage(new Message(MessageType.ELECTION, curMaxId));
+        return true;
     }
 
     public void readBuffer() {
@@ -48,7 +50,6 @@ public class Node {
                 } else if (msgContent.equals(id)) { // If it receives its own ID, it wins
                     status = Status.LEADER;
                     this.leaderId = this.id;
-                    System.out.println("Node " + id + " received its own ID. It is the leader.");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
                     terminate();
                     sentMsg = true;
@@ -56,7 +57,6 @@ public class Node {
             } else if (msgType == MessageType.LEADER_ANNOUNCEMENT) {
                 status = Status.SUBORDINATE;
                 this.leaderId = msgContent;
-//                System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 sendMessage(message);
                 terminate();
                 sentMsg = true;
@@ -68,7 +68,7 @@ public class Node {
 
     public void sendMessage(Message message) {
         next.messageQueue.add(message);
-        System.out.println("Node " + id + " sent message to " + next.getId()  + " : "+ message);
+        lastSentMessage = message;
     }
 
 
@@ -115,5 +115,9 @@ public class Node {
                 ", messageQueue=" + messageQueue +
                 ", buffer=" + buffer +
                 '}';
+    }
+
+    public Message getLastSentMessage() {
+        return lastSentMessage;
     }
 }

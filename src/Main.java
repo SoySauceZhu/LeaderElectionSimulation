@@ -1,23 +1,25 @@
 import entity.Node;
-import service.LCR_ElectionService;
+import service.LCR_SimulationService;
 import service.RandomNodes;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        Collection<Node> nodes = RandomNodes.generateRandomNodes(10);
+        Collection<Node> nodes = RandomNodes.generateNodes(10);
         System.out.println("Nodes generated:");
         for (Node node : nodes) {
             System.out.println(node);
         }
 
+        System.out.println("\n\n");
 
         System.out.println("Starting LCR Election Service...");
-        LCR_ElectionService lcrElectionService = new LCR_ElectionService(nodes);
-        lcrElectionService.startElection();
+        LCR_SimulationService lcrElectionService = new LCR_SimulationService(nodes);
+        lcrElectionService.startSimulation();
+
+//        Service service = new Service(nodes);
+//        service.conductSimulation();
 
     }
 }
