@@ -50,6 +50,7 @@ public class Node {
                 } else if (msgContent.equals(id)) { // If it receives its own ID, it wins
                     status = Status.LEADER;
                     this.leaderId = this.id;
+                    System.out.println("Node " + id + " received its own ID. It is the leader.");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
                     terminate();
                     sentMsg = true;
@@ -58,6 +59,7 @@ public class Node {
                 status = Status.SUBORDINATE;
                 this.leaderId = msgContent;
                 sendMessage(message);
+                //                System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 terminate();
                 sentMsg = true;
             }
@@ -68,6 +70,7 @@ public class Node {
 
     public void sendMessage(Message message) {
         next.messageQueue.add(message);
+        System.out.println("Node " + id + " sent message to " + next.getId() + " : " + message);
         lastSentMessage = message;
     }
 
