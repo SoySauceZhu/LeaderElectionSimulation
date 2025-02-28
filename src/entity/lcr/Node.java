@@ -6,13 +6,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Node {
-    private Integer id;
+    private final Integer id;
     private Integer curMaxId;
     private Status status = Status.UNKNOWN;
     private Node next;      // Only sent message to clockwise
     private Integer leaderId;
     private boolean terminated = false;
-    private Queue<Message> messageQueue = new LinkedList<>(); // Stores incoming messages
+    private final Queue<Message> messageQueue = new LinkedList<>(); // Stores incoming messages
     private Message buffer = null;
     private Message lastSentMessage = null;
 

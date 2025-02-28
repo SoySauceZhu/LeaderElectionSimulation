@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public class Main {
     public static void main(String[] args) {
-        Collection<Node> nodes = RandomNodes.generateNodes(10);
+        Collection<Node> nodes = RandomNodes.generateRandomNodes(10);
         System.out.println("Nodes generated:");
         for (Node node : nodes) {
             System.out.println(node);
@@ -17,6 +17,10 @@ public class Main {
         System.out.println("Starting LCR Election Service...");
         LCR_SimulationService lcrElectionService = new LCR_SimulationService(nodes);
         lcrElectionService.startSimulation();
+
+        for (Node node : nodes) {
+            System.out.println(node);
+        }
 
     }
 }
