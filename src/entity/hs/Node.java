@@ -1,6 +1,5 @@
 package entity.hs;
 
-import entity.common.MessageType;
 import entity.common.Status;
 
 import java.util.HashMap;
@@ -8,8 +7,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import static entity.common.MessageType.IN;
-import static entity.common.MessageType.OUT;
+import static entity.common.MessageType.*;
 import static entity.hs.Port.LEFT;
 import static entity.hs.Port.RIGHT;
 
@@ -48,84 +46,87 @@ public class Node {
 
     public boolean processMessages() {
         boolean sent = false;
-        if ((buffer.get(LEFT) == null && buffer.get(RIGHT) == null) || terminated) {
+        if (terminated || status.equals(Status.LEADER)) {
             return false;
         }
 
-
         Message leftMsg = buffer.get(LEFT);
         Message rightMsg = buffer.get(RIGHT);
-        Integer leftMsgHopCount = null;
-        MessageType leftMsgType = null;
-        Integer leftMsgId = null;
-        MessageType rightMsgType = null;
-        Integer rightMsgId = null;
-        Integer rightMsgHopCount = null;
+        Message sendLeftMsg = null;
+        Message sendRightMsg = null;
+        Message lastSentLeftMsg = lastSentMessage.get(LEFT);
+        Message lastSentRightMsg = lastSentMessage.get(RIGHT);
 
-        if (leftMsg != null) {
-            leftMsgType = leftMsg.getMsgType();
-            leftMsgId = leftMsg.getId();
-            leftMsgHopCount = leftMsg.getHopCount();
-        }
-
-        if (rightMsg != null) {
-            rightMsgType = rightMsg.getMsgType();
-            rightMsgId = rightMsg.getId();
-            rightMsgHopCount = rightMsg.getHopCount();
-        }
-
-        if (leftMsg != null && leftMsgType.equals(MessageType.LEADER_ANNOUNCEMENT)) {
+        if (rightMsg != null && rightMsg.getMsgType().equals(LEADER_ANNOUNCEMENT)) {
+            leaderId = rightMsg.getId();
             status = Status.SUBORDINATE;
-            leaderId = leftMsgId;
+            sendLeftMsg = new Message(leaderId, LEADER_ANNOUNCEMENT, 1);
             terminate();
-            return sendRight(leftMsg);
         }
 
-        if (rightMsg != null && rightMsgType.equals(MessageType.LEADER_ANNOUNCEMENT)) {
+        if (leftMsg != null && leftMsg.getMsgType().equals(LEADER_ANNOUNCEMENT)) {
+            leaderId = leftMsg.getId();
             status = Status.SUBORDINATE;
-            leaderId = rightMsgId;
+            sendRightMsg = new Message(leaderId, LEADER_ANNOUNCEMENT, 1);
             terminate();
-            return sendLeft(rightMsg);
         }
 
-        if (rightMsg != null && rightMsgType.equals(OUT)) {
-            if (rightMsgId > id && rightMsgHopCount > 1) {
-                return sendLeft(new Message(rightMsgId, OUT, rightMsgHopCount - 1));
-            } else if (rightMsgId > id && rightMsgHopCount == 1) {
-                return sendRight(new Message(rightMsgId, IN, 1));
-            } else if (rightMsgId.equals(id)) {
+        if (rightMsg != null && rightMsg.getMsgType().equals(OUT)) {
+            if (rightMsg.getId() > id && rightMsg.getHopCount() > 1) {
+                sendLeftMsg = new Message(rightMsg.getId(), OUT, rightMsg.getHopCount() - 1);
+            } else if (rightMsg.getId() > id && rightMsg.getHopCount() == 1) {
+                sendRightMsg = new Message(rightMsg.getId(), IN, 1);
+            } else if (rightMsg.getId().equals(id)) {
+                leaderId = id;
                 status = Status.LEADER;
-                System.out.println("Node " + id + " is the leader");
+                sendRightMsg = new Message(id, LEADER_ANNOUNCEMENT, 1);
+                sendLeftMsg = new Message(id, LEADER_ANNOUNCEMENT, 1);
                 terminate();
-                return sendRight(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
             }
         }
 
-        if (leftMsg != null && leftMsgType.equals(OUT)) {
-            if (leftMsgId > id && leftMsgHopCount > 1) {
-                return sendRight(new Message(leftMsgId, OUT, leftMsgHopCount - 1));
-            } else if (leftMsgId > id && leftMsgHopCount == 1) {
-                sent = sendLeft(new Message(leftMsgId, IN, 1));
-            } else if (leftMsgId.equals(id)) {
+        if (leftMsg != null && leftMsg.getMsgType().equals(OUT)) {
+            if (leftMsg.getId() > id && leftMsg.getHopCount() > 1) {
+                sendRightMsg = new Message(leftMsg.getId(), OUT, leftMsg.getHopCount() - 1);
+            } else if (leftMsg.getId() > id && leftMsg.getHopCount() == 1) {
+                sendLeftMsg = new Message(leftMsg.getId(), IN, 1);
+            } else if (leftMsg.getId().equals(id)) {
+                leaderId = id;
                 status = Status.LEADER;
-                System.out.println("Node " + id + " is the leader");
+                sendRightMsg = new Message(id, LEADER_ANNOUNCEMENT, 1);
+                sendLeftMsg = new Message(id, LEADER_ANNOUNCEMENT, 1);
                 terminate();
-                sent = sendLeft(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
             }
         }
 
-        if (rightMsg != null && rightMsgType.equals(IN) && !rightMsgId.equals(id)) {
-            sent = sendLeft(new Message(rightMsgId, IN, 1));
+        if (leftMsg != null && leftMsg.getMsgType().equals(IN)
+                && !leftMsg.getId().equals(id)) {
+            sendRightMsg = new Message(leftMsg.getId(), IN, 1);
         }
 
-        if (leftMsg != null && leftMsgType.equals(IN) && !leftMsgId.equals(id)) {
-            sent = sendRight(new Message(leftMsgId, IN, 1));
+        if (rightMsg != null && rightMsg.getMsgType().equals(IN)
+                && !rightMsg.getId().equals(id)) {
+            sendLeftMsg = new Message(rightMsg.getId(), IN, 1);
         }
 
-        if (rightMsg != null && leftMsgType != null && rightMsgType.equals(IN) && leftMsgType.equals(IN)) {
+        if (leftMsg != null && rightMsg != null
+                && rightMsg.getMsgType().equals(IN)
+                && leftMsg.getMsgType().equals(IN)
+                && rightMsg.getId().equals(id)
+                && leftMsg.getId().equals(id)) {
             phase++;
-            sendRight(new Message(id, OUT, (int) Math.pow(2, phase)));
-            sendLeft(new Message(id, OUT, (int) Math.pow(2, phase)));
+            sendRightMsg = new Message(id, OUT, (int) Math.pow(2, phase));
+            sendLeftMsg = new Message(id, OUT, (int) Math.pow(2, phase));
+        }
+
+        if (sendLeftMsg != null) {
+            sendLeft(sendLeftMsg);
+            lastSentLeftMsg = sendLeftMsg;
+            sent = true;
+        }
+        if (sendRightMsg != null) {
+            sendRight(sendRightMsg);
+            lastSentRightMsg = sendRightMsg;
             sent = true;
         }
 
@@ -141,21 +142,19 @@ public class Node {
         return phase;
     }
 
-    public boolean sendLeft(Message leftMsg) {
+    public void sendLeft(Message leftMsg) {
         Node left = neighbors.get(LEFT);
         // Add message to the right port of the left node
         left.messageQueueMap.get(RIGHT).add(leftMsg);
         lastSentMessage.put(LEFT, leftMsg);
-        System.out.println("Node " + id + " sent message to (" + left.getId() + " : " + leftMsg + ")");
-        return true;
+        System.out.println("Node " + id + " sent message to " + left.getId() + ":  (" + leftMsg + ")");
     }
 
-    public boolean sendRight(Message rightMsg) {
+    public void sendRight(Message rightMsg) {
         Node right = neighbors.get(RIGHT);
         right.messageQueueMap.get(LEFT).add(rightMsg);
         lastSentMessage.put(RIGHT, rightMsg);
-        System.out.println("Node " + id + " sent message to (" + right.getId() + " : " + rightMsg + ")");
-        return true;
+        System.out.println("Node " + id + " sent message to " + right.getId() + ": (" + rightMsg + ")");
     }
 
     public void terminate() {
@@ -207,9 +206,9 @@ public class Node {
 //                ", neigbours=" + neighbors +
                 ", leaderId=" + leaderId +
                 ", terminated=" + terminated +
-                ", messageQueue=" + messageQueueMap +
+                ", messageQueue={" + messageQueueMap.get(LEFT).peek() + ", " + messageQueueMap.get(RIGHT).peek() + "}" +
                 ", phase=" + phase +
-                ", buffer=" + buffer + '}';
+                ", buffer={" + buffer.get(LEFT) + ", " + buffer.get(RIGHT) + "}";
     }
 
 

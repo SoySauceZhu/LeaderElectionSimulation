@@ -95,7 +95,7 @@ public class HS_SimulationService implements SimulationService {
     }
 
     public static void main(String[] args) {
-        List<Node> nodes = generateNodeRing("123456789");
+        List<Node> nodes = generateNodeRing("0123456789");
 
         SimulationService service = new HS_SimulationService(nodes);
 
