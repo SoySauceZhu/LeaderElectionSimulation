@@ -1,7 +1,5 @@
 package entity.common;
 
-import entity.lcr.MessageType;
-
 public class MessageLog {
     private final int round;
     private final int sender;

@@ -1,5 +1,5 @@
 package entity.lcr;
-
+import entity.common.MessageType;
 
 public class Message {
     private MessageType msgType;        // message type ID

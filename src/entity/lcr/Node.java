@@ -1,5 +1,6 @@
 package entity.lcr;
 
+import entity.common.MessageType;
 import entity.common.Status;
 
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class Node {
 
 
     public boolean processMessages() {
-
+        boolean sent = false;
         if (buffer != null && !terminated) {
             Message message = buffer;
             buffer = null;
@@ -44,14 +45,14 @@ public class Node {
                 if (msgContent > curMaxId) {
                     curMaxId = msgContent;
                     sendMessage(message);
-                    return true;
+                    sent = true;
                 } else if (msgContent.equals(id)) { // If it receives its own ID, it wins
                     status = Status.LEADER;
                     this.leaderId = this.id;
                     System.out.println("Node " + id + " received its own ID. It is the leader.");
                     sendMessage(new Message(MessageType.LEADER_ANNOUNCEMENT, id));
                     terminate();
-                    return true;
+                    sent = true;
                 }
             } else if (msgType == MessageType.LEADER_ANNOUNCEMENT) {
                 status = Status.SUBORDINATE;
@@ -59,11 +60,11 @@ public class Node {
                 sendMessage(message);
                 System.out.println("Node " + id + " acknowledges Leader " + msgContent);
                 terminate();
-                return true;
+                sent = true;
             }
         }
 
-        return false;
+        return sent;
     }
 
     public void sendMessage(Message message) {

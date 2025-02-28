@@ -1,5 +1,7 @@
 package entity.hs;
 
+import entity.common.MessageType;
+
 public class Message {
     private final Integer id;
     private final MessageType msgType;

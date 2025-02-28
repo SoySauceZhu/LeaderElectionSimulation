@@ -7,7 +7,7 @@ import entity.common.NodeState;
 
 import java.util.*;
 
-public class LCR_SimulationService {
+public class LCR_SimulationService implements SimulationService {
     private final Collection<Node> nodes;
     private final List<Map<Integer, NodeState>> nodeStatusHistory = new ArrayList<>();
     private final List<MessageLog> messageLogs = new ArrayList<>();
@@ -34,7 +34,7 @@ public class LCR_SimulationService {
             }
 
             for (Node node : nodes) {
-                boolean sent = false;
+                boolean sent;
                 if (round == 1) {
                     sent = node.start();
                 } else {
