@@ -1,4 +1,4 @@
-import entity.Node;
+import entity.lcr.Node;
 import service.LCR_SimulationService;
 import service.RandomNodes;
 

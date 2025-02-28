@@ -1,6 +1,6 @@
 package service;
 
-import entity.Node;
+import entity.lcr.Node;
 
 import java.util.*;
 

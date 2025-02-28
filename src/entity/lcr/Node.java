@@ -1,4 +1,6 @@
-package entity;
+package entity.lcr;
+
+import entity.common.Status;
 
 import java.util.LinkedList;
 import java.util.Queue;

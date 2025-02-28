@@ -1,4 +1,6 @@
-package entity;
+package entity.common;
+
+import entity.lcr.MessageType;
 
 public class MessageLog {
     private final int round;

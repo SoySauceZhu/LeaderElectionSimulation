@@ -1,7 +1,7 @@
 package controller;
 
 import service.LCR_SimulationService;
-import entity.Node;
+import entity.lcr.Node;
 import view.View;
 
 import java.util.ArrayList;

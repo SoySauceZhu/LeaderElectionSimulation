@@ -1,9 +1,9 @@
 package service;
 
-import entity.Message;
-import entity.MessageLog;
-import entity.Node;
-import entity.NodeState;
+import entity.lcr.Message;
+import entity.common.MessageLog;
+import entity.lcr.Node;
+import entity.common.NodeState;
 
 import java.util.*;
 

@@ -1,7 +1,7 @@
 package view;
 
-import entity.MessageLog;
-import entity.NodeState;
+import entity.common.MessageLog;
+import entity.common.NodeState;
 import service.LCR_SimulationService;
 
 import java.util.List;

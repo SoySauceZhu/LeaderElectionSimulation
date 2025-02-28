@@ -1,13 +1,13 @@
-package entity;
+package entity.common;
 
 public class NodeState {
     private final int id;
     private final int curMaxId;
-    private final entity.Status status;
+    private final Status status;
     private final Integer leaderId;
     private final boolean terminated;
 
-    public NodeState(int id, int curMaxId, entity.Status status, Integer leaderId, boolean terminated) {
+    public NodeState(int id, int curMaxId, Status status, Integer leaderId, boolean terminated) {
         this.id = id;
         this.curMaxId = curMaxId;
         this.status = status;
