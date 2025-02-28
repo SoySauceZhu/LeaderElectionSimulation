@@ -8,15 +8,15 @@ import java.util.Queue;
 import static entity.common.Port.LEFT;
 import static entity.common.Port.RIGHT;
 
-public abstract class Node {
+public abstract class Node implements Cloneable {
     protected final Integer id;
     protected NodeType nodeType = NodeType.UNKNOWN;
-    protected final Map<Port, Node> neighbors = new HashMap<>();      // Only sent message to clockwise
+    protected Map<Port, Node> neighbors = new HashMap<>();      // Only sent message to clockwise
     protected Integer leaderId;
     protected boolean terminated = false;
-    protected final Map<Port, Queue<Message>> messageQueueMap = new HashMap<>();
-    protected final Map<Port, Message> buffer = new HashMap<>();
-    protected final Map<Port, Message> lastSentMessage = new HashMap<>();
+    protected Map<Port, Queue<Message>> messageQueueMap = new HashMap<>();
+    protected Map<Port, Message> buffer = new HashMap<>();
+    protected Map<Port, Message> lastSentMessage = new HashMap<>();
     protected Integer phase;
 
     public Node(int id) {
@@ -36,12 +36,20 @@ public abstract class Node {
         this.neighbors.put(port, node);
     }
 
-    public void sendMessageTo(Port port, Message message) {
+    protected void clearLastSent() {
+        lastSentMessage.put(RIGHT, null);
+        lastSentMessage.put(LEFT, null);
+    }
+
+    protected void sendMessageTo(Port port, Message message) {
+        System.out.println("Node " + id + " sends to " + neighbors.get(port).getId() + " : {" + message + "}");
         if (port.equals(Port.LEFT)) {
+            lastSentMessage.put(LEFT, message);
             // Add message to the left neighbor's right message queue
             Node leftNode = neighbors.get(Port.LEFT);
             leftNode.messageQueueMap.get(Port.RIGHT).add(message);
         } else {
+            lastSentMessage.put(RIGHT, message);
             // Add message to the right neighbor's left message queue
             Node rightNode = neighbors.get(Port.RIGHT);
             rightNode.messageQueueMap.get(Port.LEFT).add(message);
@@ -55,7 +63,7 @@ public abstract class Node {
         buffer.put(Port.RIGHT, rightMsg);
     }
 
-    public void terminate() {
+    protected void terminate() {
         this.terminated = true;
     }
 
@@ -63,7 +71,7 @@ public abstract class Node {
         return id;
     }
 
-    public NodeType getStatus() {
+    public NodeType getNodeType() {
         return nodeType;
     }
 
@@ -100,11 +108,23 @@ public abstract class Node {
         return "Node{" +
                 "id=" + id +
                 ", status=" + nodeType +
-//                ", neigbours=" + neighbors +
                 ", leaderId=" + leaderId +
                 ", terminated=" + terminated +
                 ", messageQueue={" + messageQueueMap.get(LEFT).peek() + ", " + messageQueueMap.get(RIGHT).peek() + "}" +
                 ", phase=" + phase +
                 ", buffer={" + buffer.get(LEFT) + ", " + buffer.get(RIGHT) + "}";
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Node cloned = (Node) super.clone();
+        cloned.neighbors = new HashMap<>(this.neighbors);
+        cloned.messageQueueMap = new HashMap<>();
+        for (Map.Entry<Port, Queue<Message>> entry : this.messageQueueMap.entrySet()) {
+            cloned.messageQueueMap.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+        }
+        cloned.buffer = new HashMap<>(this.buffer);
+        cloned.lastSentMessage = new HashMap<>(this.lastSentMessage);
+        return cloned;
     }
 }

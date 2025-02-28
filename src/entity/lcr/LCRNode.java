@@ -27,7 +27,9 @@ public class LCRNode extends Node {
     @Override
     public boolean processMessages() {
         boolean sent = false;
-        if (buffer.get(LEFT) == null || terminated || getStatus().equals(LEADER)) {
+        lastSentMessage.put(RIGHT, null);
+        lastSentMessage.put(LEFT, null);
+        if (buffer.get(LEFT) == null || terminated || getNodeType().equals(LEADER)) {
             return false;
         }
 

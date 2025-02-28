@@ -1,37 +1,42 @@
 package entity.common;
 
 public class MessageLog {
-    private final int round;
-    private final int sender;
-    private final int receiver;
-    private final MessageType messageType;
-    private final int messageContent;
+    private final Integer round;
+    private final Integer sender;
+    private final Integer receiver;
+    private final Message message;
 
-    public MessageLog(int round, int sender, int receiver, MessageType messageType, int messageContent) {
+    public MessageLog(Integer round, Integer sender, Integer receiver, Message message) {
         this.round = round;
         this.sender = sender;
         this.receiver = receiver;
-        this.messageType = messageType;
-        this.messageContent = messageContent;
+        this.message = message;
     }
 
-    public int getRound() {
+
+    public Integer getRound() {
         return round;
     }
 
-    public int getSender() {
+    public Integer getSender() {
         return sender;
     }
 
-    public int getReceiver() {
+    public Integer getReceiver() {
         return receiver;
     }
 
-    public MessageType getMessageType() {
-        return messageType;
+    public Message getMessage() {
+        return message;
     }
 
-    public int getMessageContent() {
-        return messageContent;
+    @Override
+    public String toString() {
+        return "MessageLog{" +
+                "round=" + round +
+                ", sender=" + sender +
+                ", receiver=" + receiver +
+                ", message=" + message +
+                '}';
     }
 }

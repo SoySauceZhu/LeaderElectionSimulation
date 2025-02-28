@@ -1,31 +1,29 @@
 package entity.common;
 
 public class NodeLog {
-    private final Integer id;
-    private final NodeType nodeType;
-    private final Integer leaderId;
-    private final boolean terminated;
+    private final Integer round;
+    private final Node node;
 
-    public NodeLog(Integer id, NodeType nodeType, Integer leaderId, boolean terminated) {
-        this.id = id;
-        this.nodeType = nodeType;
-        this.leaderId = leaderId;
-        this.terminated = terminated;
+
+    public NodeLog(Integer round, Node node) {
+        this.round = round;
+        this.node = node;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getRound() {
+        return round;
     }
 
-    public NodeType getStatus() {
-        return nodeType;
+    public Node getNode() {
+        return node;
     }
 
-    public Integer getLeaderId() {
-        return leaderId;
+    @Override
+    public String toString() {
+        return "NodeLog{" +
+                "round=" + round +
+                ", node=" + node +
+                '}';
     }
 
-    public boolean isTerminated() {
-        return terminated;
-    }
 }
