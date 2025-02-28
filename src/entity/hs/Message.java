@@ -1,18 +1,18 @@
 package entity.hs;
 
 public class Message {
-    private Integer id;
-    private MessageType msgDirection;
-    private Integer hopCount;
+    private final Integer id;
+    private final MessageType msgType;
+    private final Integer hopCount;
 
     public Message(Integer id, MessageType messageType, Integer hopCount) {
-        this.msgDirection = messageType;
+        this.msgType = messageType;
         this.id = id;
         this.hopCount = hopCount;
     }
 
-    public MessageType getMsgDirection() {
-        return msgDirection;
+    public MessageType getMsgType() {
+        return msgType;
     }
 
     public Integer getId() {
@@ -27,7 +27,7 @@ public class Message {
     public String toString() {
         return "Message{" +
                 "id=" + id +
-                ", msgDirection=" + msgDirection +
+                ", msgDirection=" + msgType +
                 ", hopCount=" + hopCount +
                 '}';
     }

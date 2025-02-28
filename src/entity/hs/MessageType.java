@@ -1,5 +1,5 @@
 package entity.hs;
 
 public enum MessageType {
-    IN, OUT
+    IN, OUT, LEADER_ANNOUNCEMENT
 }
