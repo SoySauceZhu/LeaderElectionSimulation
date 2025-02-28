@@ -18,8 +18,5 @@ public class Main {
         LCR_SimulationService lcrElectionService = new LCR_SimulationService(nodes);
         lcrElectionService.startSimulation();
 
-//        Service service = new Service(nodes);
-//        service.conductSimulation();
-
     }
 }
