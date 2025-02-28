@@ -3,50 +3,72 @@ package entity.hs;
 import entity.common.Status;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
 public class Node {
     private Integer id;
-    private Integer curMaxId;
     private Status status = Status.UNKNOWN;
-    private Map<String, Node> neighbors;      // Only sent message to clockwise
+    private Map<Port, Node> neighbors;      // Only sent message to clockwise
     private Integer leaderId;
     private boolean terminated = false;
-    private Queue<Message> messageQueue = new LinkedList<>(); // Stores incoming messages
-    private Message buffer = null;
-    private Map<String, Message> lastSentMessage = new HashMap<>();
+    private Map<Port, Queue<Message>> messageQueueMap = new HashMap<>();
+    private Map<Port, Message> buffer = new HashMap<>();
+    private Map<Port, Message> lastSentMessage = new HashMap<>();
     private Integer phase;
 
     public Node(int id) {
         this.id = id;
-        this.curMaxId = id; // Initially, each node sends its own ID
-        this.phase = 0;
+        this.phase = 1;
     }
 
     public boolean start() {
+        Message leftMsg = new Message(this.id, MessageType.OUT, phase);
+        Message rightMsg = new Message(this.id, MessageType.OUT, phase);
+        sendMessage(leftMsg, rightMsg);
         return true;
     }
 
     public void readBuffer() {
-
+        Message leftMsg = messageQueueMap.get(Port.LEFT).poll();
+        Message rightMsg = messageQueueMap.get(Port.RIGHT).poll();
+        buffer.put(Port.LEFT, leftMsg);
+        buffer.put(Port.RIGHT, rightMsg);
     }
 
     public boolean processMessages() {
+
         return true;
     }
+
 
     public void sendMessage(Message leftMsg, Message rightMsg) {
         Node left = neighbors.get("left");
         Node right = neighbors.get("right");
-        left.messageQueue.add(leftMsg);
-        right.messageQueue.add(rightMsg);
-        lastSentMessage.put("left", leftMsg);
-        lastSentMessage.put("right", rightMsg);
+        left.messageQueueMap.get(Port.RIGHT).add(rightMsg);
+        right.messageQueueMap.get(Port.LEFT).add(leftMsg);
+        lastSentMessage.put(Port.LEFT, leftMsg);
+        lastSentMessage.put(Port.RIGHT, rightMsg);
         System.out.println("Node " + id + " sent message to ("
                 + left.getId() + " : " + leftMsg + ", "
                 + left.getId() + " : " + rightMsg + ")");
+    }
+
+    public void sendLeft(Message leftMsg) {
+        Node left = neighbors.get(Port.LEFT);
+        // Add message to the right port of the left node
+        left.messageQueueMap.get(Port.RIGHT).add(leftMsg);
+        lastSentMessage.put(Port.LEFT, leftMsg);
+        System.out.println("Node " + id + " sent message to ("
+                + left.getId() + " : " + leftMsg + ")");
+    }
+
+    public void sendRight(Message rightMsg) {
+        Node right = neighbors.get(Port.RIGHT);
+        right.messageQueueMap.get(Port.LEFT).add(rightMsg);
+        lastSentMessage.put(Port.RIGHT, rightMsg);
+        System.out.println("Node " + id + " sent message to ("
+                + right.getId() + " : " + rightMsg + ")");
     }
 
     public void terminate() {
@@ -54,12 +76,11 @@ public class Node {
     }
 
     public void setNeighbors(Node left, Node right) {
-        neighbors.put("left", left);
-        neighbors.put("right", right);
+        neighbors.put(Port.LEFT, left);
+        neighbors.put(Port.RIGHT, right);
     }
 
-
-    public void setNeighbors(Map<String, Node> neighbors) {
+    public void setNeighbors(Map<Port, Node> neighbors) {
         this.neighbors = neighbors;
     }
 
@@ -67,15 +88,12 @@ public class Node {
         return id;
     }
 
-    public Integer getCurMaxId() {
-        return curMaxId;
-    }
 
     public Status getStatus() {
         return status;
     }
 
-    public Map<String, Node> getNeighbors() {
+    public Map<Port, Node> getNeighbors() {
         return neighbors;
     }
 
@@ -87,15 +105,15 @@ public class Node {
         return terminated;
     }
 
-    public Queue<Message> getMessageQueue() {
-        return messageQueue;
+    public Map<Port, Queue<Message>> getMessageQueue() {
+        return messageQueueMap;
     }
 
-    public Message getBuffer() {
+    public Map<Port, Message> getBuffer() {
         return buffer;
     }
 
-    public Map<String, Message> getLastSentMessage() {
+    public Map<Port, Message> getLastSentMessage() {
         return lastSentMessage;
     }
 
@@ -103,11 +121,10 @@ public class Node {
     public String toString() {
         return "Node{" +
                 "id=" + id +
-                ", curMaxId=" + curMaxId +
                 ", status=" + status +
                 ", leaderId=" + leaderId +
                 ", terminated=" + terminated +
-                ", messageQueue=" + messageQueue +
+                ", messageQueue=" + messageQueueMap +
                 ", buffer=" + buffer +
                 '}';
     }
