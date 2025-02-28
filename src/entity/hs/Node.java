@@ -33,7 +33,8 @@ public class Node {
     public boolean start() {
         Message leftMsg = new Message(this.id, OUT, 1);
         Message rightMsg = new Message(this.id, OUT, 1);
-        sendMessage(leftMsg, rightMsg);
+        sendLeft(leftMsg);
+        sendRight(rightMsg);
         return true;
     }
 
@@ -45,6 +46,12 @@ public class Node {
     }
 
     public boolean processMessages() {
+        if (buffer.get(LEFT) == null || buffer.get(RIGHT) == null
+                || terminated) {
+            return false;
+        }
+
+
         Message leftMsg = buffer.get(LEFT);
         Message rightMsg = buffer.get(RIGHT);
 
@@ -58,95 +65,81 @@ public class Node {
         if (leftMsgType.equals(MessageType.LEADER_ANNOUNCEMENT)) {
             status = Status.SUBORDINATE;
             leaderId = leftMsgId;
-            sendRight(leftMsg);
             terminate();
+            return sendRight(leftMsg);
         }
 
         if (rightMsgType.equals(MessageType.LEADER_ANNOUNCEMENT)) {
             status = Status.SUBORDINATE;
             leaderId = rightMsgId;
-            sendLeft(rightMsg);
             terminate();
+            return sendLeft(rightMsg);
         }
 
         if (rightMsgType.equals(OUT)) {
             if (rightMsgId > id && rightMsgHopCount > 1) {
-                sendLeft(new Message(rightMsgId, OUT, rightMsgHopCount - 1));
+                return sendLeft(new Message(rightMsgId, OUT, rightMsgHopCount - 1));
             } else if (rightMsgId > id && rightMsgHopCount == 1) {
-                sendRight(new Message(rightMsgId, IN, 1));
+                return sendRight(new Message(rightMsgId, IN, 1));
             } else if (rightMsgId.equals(id)) {
                 status = Status.LEADER;
                 System.out.println("Node " + id + " is the leader");
-                sendRight(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
                 terminate();
+                return sendRight(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
             }
         }
 
         if (leftMsgType.equals(OUT)) {
             if (leftMsgId > id && leftMsgHopCount > 1) {
-                sendRight(new Message(leftMsgId, OUT, leftMsgHopCount - 1));
+                return sendRight(new Message(leftMsgId, OUT, leftMsgHopCount - 1));
             } else if (leftMsgId > id && leftMsgHopCount == 1) {
-                sendLeft(new Message(leftMsgId, IN, 1));
+                return sendLeft(new Message(leftMsgId, IN, 1));
             } else if (leftMsgId.equals(id)) {
                 status = Status.LEADER;
                 System.out.println("Node " + id + " is the leader");
-                sendLeft(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
                 terminate();
+                return sendLeft(new Message(id, MessageType.LEADER_ANNOUNCEMENT, 1));
             }
         }
 
         if (rightMsgType.equals(IN)
                 && !rightMsgId.equals(id)) {
-            sendLeft(new Message(rightMsgId, IN, 1));
+            return sendLeft(new Message(rightMsgId, IN, 1));
         }
 
         if (leftMsgType.equals(IN)
                 && !leftMsgId.equals(id)) {
-            sendRight(new Message(leftMsgId, IN, 1));
+            return sendRight(new Message(leftMsgId, IN, 1));
         }
 
-        if (rightMsgType.equals(IN)
-                && leftMsgType.equals(IN)
-                && rightMsgId.equals(id)
-                && leftMsgId.equals(id)) {
+        if (rightMsgType.equals(IN) && leftMsgType.equals(IN)) {
             phase++;
             sendRight(new Message(id, OUT, (int) Math.pow(2, phase)));
             sendLeft(new Message(id, OUT, (int) Math.pow(2, phase)));
+            return true;
         }
 
-
-        return true;
+        return false;
     }
 
 
-
-    public void sendMessage(Message leftMsg, Message rightMsg) {
-        Node left = neighbors.get(LEFT);
-        Node right = neighbors.get(RIGHT);
-        left.messageQueueMap.get(RIGHT).add(rightMsg);
-        right.messageQueueMap.get(LEFT).add(leftMsg);
-        lastSentMessage.put(LEFT, leftMsg);
-        lastSentMessage.put(RIGHT, rightMsg);
-        System.out.println("Node " + id + " sent message to ("
-                + left.getId() + " : " + leftMsg + ", "
-                + left.getId() + " : " + rightMsg + ")");
-    }
-
-    public void sendLeft(Message leftMsg) {
+    public boolean sendLeft(Message leftMsg) {
         Node left = neighbors.get(LEFT);
         // Add message to the right port of the left node
         left.messageQueueMap.get(RIGHT).add(leftMsg);
         lastSentMessage.put(LEFT, leftMsg);
         System.out.println("Node " + id + " sent message to ("
                 + left.getId() + " : " + leftMsg + ")");
+        return true;
     }
 
-    public void sendRight(Message rightMsg) {
+    public boolean sendRight(Message rightMsg) {
         Node right = neighbors.get(RIGHT);
         right.messageQueueMap.get(LEFT).add(rightMsg);
         lastSentMessage.put(RIGHT, rightMsg);
         System.out.println("Node " + id + " sent message to ("
                 + right.getId() + " : " + rightMsg + ")");
+        return true;
     }
 
     public void terminate() {
