@@ -20,6 +20,7 @@ public class LCRNode extends Node {
 
     @Override
     public boolean start() {
+        curMaxId = id;
         sendMessageTo(RIGHT, new Message(curMaxId, OUT));
         return true;
     }
@@ -27,8 +28,6 @@ public class LCRNode extends Node {
     @Override
     public boolean processMessages() {
         boolean sent = false;
-        lastSentMessage.put(RIGHT, null);
-        lastSentMessage.put(LEFT, null);
         if (buffer.get(LEFT) == null || terminated || getNodeType().equals(LEADER)) {
             return false;
         }
@@ -39,7 +38,7 @@ public class LCRNode extends Node {
 
         if (message.getMsgType().equals(OUT)) {
             if (message.getMsgContent() > curMaxId) {
-                curMaxId = message.getHopCount();
+                curMaxId = message.getMsgContent();
                 sendRightMsg = message;
             } else if (message.getMsgContent().equals(id)) {
                 nodeType = LEADER;

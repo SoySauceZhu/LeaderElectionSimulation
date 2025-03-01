@@ -29,6 +29,7 @@ public abstract class SimulationService {
 
         while (!allAcknowledgeLeaders) {
             round++;
+            System.out.println("\n");
             PrintBox.printInBox("Round " + round);
 
             allAcknowledgeLeaders = true;
@@ -61,14 +62,23 @@ public abstract class SimulationService {
 
         System.out.println("\n\nElection completed in " + round + " rounds with " + totalMsg + " messages sent.");
 
-        printNodeStates();
+//        printNodeStates();
+//        printMsgLog();
     }
 
     private void printNodeStates() {
         System.out.println("\n\n");
         PrintBox.printInBox("Final State of Nodes");
-        for (Node node: nodes) {
+        for (Node node : nodes) {
             System.out.println(node);
+        }
+    }
+
+    private void printMsgLog() {
+        System.out.println("\n\n");
+        PrintBox.printInBox("MessageLog");
+        for (MessageLog messageLog : messageLogs) {
+            System.out.println(messageLog);
         }
     }
 }

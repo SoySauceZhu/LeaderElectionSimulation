@@ -5,12 +5,15 @@ import util.GenerateNodes;
 
 public class LCR_SimulationService extends SimulationService {
 
-    public LCR_SimulationService(int num) {
-        nodes = GenerateNodes.generateLCRNodes(num);
+    public LCR_SimulationService() {
+
     }
 
     public static void main(String[] args) throws CloneNotSupportedException {
-        SimulationService service = new LCR_SimulationService(10);
+        SimulationService service = new LCR_SimulationService();
+        GenerateNodes generateNodes = new GenerateNodes(42);
+//        service.setNodes(generateNodes.generateRandomLCRNodes(10));
+        service.setNodes(generateNodes.generateLCRNodes(10));
         service.startSimulation();
 
 //        System.out.println("\n\n");
@@ -19,11 +22,6 @@ public class LCR_SimulationService extends SimulationService {
 //            System.out.println(node);
 //        }
 
-        System.out.println("\n\n");
-
-        for (MessageLog messageLog : service.messageLogs) {
-            System.out.println(messageLog);
-        }
 
 //
 //        System.out.println("\n\n");

@@ -1,18 +1,16 @@
 package service;
 
-import entity.common.MessageLog;
-import entity.common.Node;
-import entity.common.NodeLog;
 import util.GenerateNodes;
 
 public class HS_SimulationService extends SimulationService {
 
-    public HS_SimulationService(int num) {
-        nodes = GenerateNodes.generateHSNodes(num);
+    public HS_SimulationService() {
     }
 
     public static void main(String[] args) throws CloneNotSupportedException {
-        SimulationService service = new HS_SimulationService(10);
+        SimulationService service = new HS_SimulationService();
+        GenerateNodes generateNodes = new GenerateNodes(42);
+        service.setNodes(generateNodes.generateHSNodes(10));
         service.startSimulation();
 
 //        System.out.println("\n\n");

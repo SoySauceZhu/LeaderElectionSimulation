@@ -57,6 +57,7 @@ public abstract class Node implements Cloneable {
     }
 
     public void readBuffer() {
+        clearLastSent();
         Message leftMsg = messageQueueMap.get(Port.LEFT).poll();
         Message rightMsg = messageQueueMap.get(Port.RIGHT).poll();
         buffer.put(Port.LEFT, leftMsg);

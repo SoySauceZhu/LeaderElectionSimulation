@@ -10,8 +10,17 @@ import java.util.*;
 import static entity.common.Port.RIGHT;
 
 public class GenerateNodes {
+    private Random rand;
 
-    public static List<Node> generateHSNodes(int numberOfNodes) {
+    public GenerateNodes(int num) {
+        this.rand = new Random(num);
+    }
+
+    public GenerateNodes() {
+        this.rand = new Random();
+    }
+
+    public List<Node> generateHSNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
         int[] ids = new int[numberOfNodes];
 
@@ -35,7 +44,7 @@ public class GenerateNodes {
         return nodes;
     }
 
-    public static List<Node> generateLCRNodes(int numberOfNodes) {
+    public List<Node> generateLCRNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
         int[] ids = new int[numberOfNodes];
 
@@ -58,16 +67,15 @@ public class GenerateNodes {
     }
 
 
-    public static List<Node> generateRandomLCRNodes(int numberOfNodes) {
+    public List<Node> generateRandomLCRNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
-        Random random = new Random();
         Node last = new LCRNode(0);
         Node sentinel = last;
         nodes.add(last);
 
         Set<Integer> uniqueIds = new HashSet<>();
-        while (uniqueIds.size() < numberOfNodes) {
-            uniqueIds.add(random.nextInt(1, numberOfNodes * 3));
+        while (uniqueIds.size() < numberOfNodes - 1) {
+            uniqueIds.add(rand.nextInt(1, numberOfNodes * 3));
         }
         Iterator<Integer> idIterator = uniqueIds.iterator();
 
@@ -90,16 +98,15 @@ public class GenerateNodes {
         return nodes;
     }
 
-    public static List<Node> generateRandomHSNodes(int numberOfNodes) {
+    public List<Node> generateRandomHSNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
-        Random random = new Random();
         Node last = new HSNode(0);
         Node sentinel = last;
         nodes.add(last);
 
         Set<Integer> uniqueIds = new HashSet<>();
-        while (uniqueIds.size() < numberOfNodes) {
-            uniqueIds.add(random.nextInt(1, numberOfNodes * 3));
+        while (uniqueIds.size() < numberOfNodes - 1) {
+            uniqueIds.add(rand.nextInt(1, numberOfNodes * 3));
         }
         Iterator<Integer> idIterator = uniqueIds.iterator();
 
@@ -121,8 +128,9 @@ public class GenerateNodes {
     }
 
     public static void main(String[] args) {
+        GenerateNodes generateNodes = new GenerateNodes(42);
 //        List<Node> nodes = GenerateNodes.generateLCRNodes(10);
-        List<Node> nodes = GenerateNodes.generateRandomHSNodes(10);
+        List<Node> nodes = generateNodes.generateRandomHSNodes(10);
 //        for (Node node : nodes) {
 //            System.out.println(node);
 //        }
