@@ -36,6 +36,28 @@ public class GenerateNodes {
         return nodes;
     }
 
+    public static List<Node> generateLCRNodes(int numberOfNodes) {
+        List<Node> nodes = new ArrayList<>();
+        int[] ids = new int[numberOfNodes];
+
+        for (int i = 0; i < numberOfNodes; i++) {
+            ids[i] = i;
+        }
+
+        for (int i = 0; i < numberOfNodes; i++) {
+            Node node = new LCRNode(ids[i]);
+            nodes.add(node);
+        }
+
+        for (int i = 0; i < numberOfNodes; i++) {
+            Node currentNode = nodes.get(i);
+            Node nextNode = nodes.get((i + 1) % nodes.size());
+            currentNode.setNeighbor(RIGHT, nextNode);
+        }
+
+        return nodes;
+    }
+
 
 
     public static List<Node> generateRandomLCRNodes(int numberOfNodes) {
