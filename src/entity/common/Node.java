@@ -1,5 +1,7 @@
 package entity.common;
 
+import util.Logger;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,7 +44,7 @@ public abstract class Node implements Cloneable {
     }
 
     protected void sendMessageTo(Port port, Message message) {
-        System.out.println("Node " + id + " sends to " + neighbors.get(port).getId() + " : {" + message + "}");
+        Logger.info("Node " + id + " sends to " + neighbors.get(port).getId() + " : {" + message + "}");
         if (port.equals(Port.LEFT)) {
             lastSentMessage.put(LEFT, message);
             // Add message to the left neighbor's right message queue

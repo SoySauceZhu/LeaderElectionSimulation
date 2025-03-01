@@ -1,12 +1,14 @@
 import entity.common.Node;
 import service.SimulationService;
 import util.GenerateNodes;
+import util.Logger;
 import util.PrintBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 public class Main {
     static public Scanner sc = new Scanner(System.in);
@@ -21,14 +23,14 @@ public class Main {
         System.out.println("4. Random HS nodes");
         int choice = sc.nextInt();
 
-        System.out.println("Enter the size of the node list:");
+        System.out.println("\nEnter the size of the node list:");
         int size = sc.nextInt();
 
         GenerateNodes generateNodes = new GenerateNodes();
 
         boolean msgLog = false;
-        System.out.println("Do you want to record Message Log: (y/n)");
-        msgLog = sc.next().equalsIgnoreCase("y");
+//        System.out.println("Do you want to record Message Log: (y/n)");
+//        msgLog = sc.next().equalsIgnoreCase("y");
 
         boolean nodeLog = false;
 //        System.out.println("Do you want to record Node Log: (y/n)");
@@ -53,12 +55,20 @@ public class Main {
                 return;
         }
 
+
+        System.out.println("\nDo you want do show console log info: (y/n)");
+        if (sc.next().equalsIgnoreCase("y")) {
+            Logger.setLevel(Level.FINE);
+        } else {
+            Logger.setLevel(Level.OFF);
+        }
+
+
         SimulationService service = new SimulationService();
         service.setNodes(nodes);
 
 
         PrintBox.printInBox(size + " nodes have been created");
-
         for (int i = 0; i < nodes.size(); i++) {
             if (i == 5) {
                 System.out.println("...");
@@ -67,17 +77,37 @@ public class Main {
             System.out.println(nodes.get(i));
         }
 
-        System.out.println("\nPress any key to continue:");
 
+        System.out.println("\nPress any key to continue:\n");
         System.in.read();
+
+        Runtime runtime = Runtime.getRuntime();
+        runtime.gc();
+
+        long beforeUsedMem = runtime.totalMemory() - runtime.freeMemory();
+        long startTime = System.nanoTime();
 
         service.startSimulation(msgLog, nodeLog);
 
-        service.printNodeStates();
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("\nExecution time: " + (double) duration / (double) 1_000_000 + " milliseconds");
 
-        System.out.println("\nDo you want to inspect the message log? (y/n):");
+
+        long afterUsedMem = runtime.totalMemory() - runtime.freeMemory();
+        long memoryUsed = afterUsedMem - beforeUsedMem;
+        System.out.println("Memory used: " + memoryUsed + " bytes");
+
+
+        System.out.println("\nDo you want to show final node states: (y/n)");
         if (sc.next().equalsIgnoreCase("y")) {
-            service.printMsgLog();
+            service.printNodeStates();
         }
+
+
+//        System.out.println("\nDo you want to inspect the message log? (y/n):");
+//        if (sc.next().equalsIgnoreCase("y")) {
+//            service.printMsgLog();
+//        }
     }
 }
