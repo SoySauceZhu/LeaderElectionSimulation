@@ -5,8 +5,7 @@ import entity.common.Port;
 import entity.hs.HSNode;
 import entity.lcr.LCRNode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static entity.common.Port.RIGHT;
 
@@ -59,27 +58,63 @@ public class GenerateNodes {
     }
 
 
-
     public static List<Node> generateRandomLCRNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
-        int[] ids = new int[numberOfNodes];
+        Random random = new Random();
+        Node last = new LCRNode(0);
+        Node sentinel = last;
+        nodes.add(last);
 
-        for (int i = 0; i < numberOfNodes; i++) {
-            ids[i] = i;
+        Set<Integer> uniqueIds = new HashSet<>();
+        while (uniqueIds.size() < numberOfNodes) {
+            uniqueIds.add(random.nextInt(1, numberOfNodes * 3));
+        }
+        Iterator<Integer> idIterator = uniqueIds.iterator();
+
+//        for (int i = 0; i < numberOfNodes; i++) {
+//            int id = random.nextInt(1, numberOfNodes * 3);
+
+        while (idIterator.hasNext()) {
+            int id = idIterator.next();
+            Node nextNode = new LCRNode(id);
+            nodes.add(nextNode);
+            last.setNeighbor(RIGHT, nextNode);
+
+            if (!idIterator.hasNext()) {
+                nextNode.setNeighbor(RIGHT, sentinel);
+            }
+            last = nextNode;
         }
 
-        // Shuffle the ids array to randomize node IDs
-        java.util.Collections.shuffle(java.util.Arrays.asList(ids));
 
-        for (int i = 0; i < numberOfNodes; i++) {
-            Node node = new LCRNode(ids[i]);
-            nodes.add(node);
+        return nodes;
+    }
+
+    public static List<Node> generateRandomHSNodes(int numberOfNodes) {
+        List<Node> nodes = new ArrayList<>();
+        Random random = new Random();
+        Node last = new HSNode(0);
+        Node sentinel = last;
+        nodes.add(last);
+
+        Set<Integer> uniqueIds = new HashSet<>();
+        while (uniqueIds.size() < numberOfNodes) {
+            uniqueIds.add(random.nextInt(1, numberOfNodes * 3));
         }
+        Iterator<Integer> idIterator = uniqueIds.iterator();
 
-        for (int i = 0; i < numberOfNodes; i++) {
-            Node currentNode = nodes.get(i);
-            Node nextNode = nodes.get((i + 1) % nodes.size());
-            currentNode.setNeighbor(RIGHT, nextNode);
+        while (idIterator.hasNext()) {
+            int id = idIterator.next();
+            Node nextNode = new HSNode(id);
+            nodes.add(nextNode);
+            last.setNeighbor(RIGHT, nextNode);
+            nextNode.setNeighbor(Port.LEFT, last);
+
+            if (!idIterator.hasNext()) {
+                nextNode.setNeighbor(RIGHT, sentinel);
+                sentinel.setNeighbor(Port.LEFT, nextNode);
+            }
+            last = nextNode;
         }
 
         return nodes;
@@ -87,16 +122,18 @@ public class GenerateNodes {
 
     public static void main(String[] args) {
 //        List<Node> nodes = GenerateNodes.generateLCRNodes(10);
-//        List<Node> nodes = GenerateNodes.generateRandomHSNodes(10);
+        List<Node> nodes = GenerateNodes.generateRandomHSNodes(10);
 //        for (Node node : nodes) {
 //            System.out.println(node);
 //        }
 
-//        Node ptr = nodes.get(0);
-//        while (ptr != null && !ptr.equals(nodes.get(0))) {
-//            System.out.println(ptr);
-//            ptr = ptr.getNeighbors().get(RIGHT);
-//        }
+        Node ptr = nodes.get(0);
+        System.out.println(ptr);
+        ptr = ptr.getNeighbors().get(RIGHT);
+        while (ptr != null && !ptr.equals(nodes.get(0))) {
+            System.out.println(ptr);
+            ptr = ptr.getNeighbors().get(RIGHT);
+        }
     }
 }
 

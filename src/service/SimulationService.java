@@ -3,6 +3,7 @@ package service;
 import entity.common.MessageLog;
 import entity.common.Node;
 import entity.common.NodeLog;
+import util.PrintBox;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,10 @@ public abstract class SimulationService {
     protected final List<NodeLog> nodeLogs = new ArrayList<>();
     protected final List<MessageLog> messageLogs = new ArrayList<>();
 
+    public void setNodes(Collection<Node> nodes) {
+        this.nodes = nodes;
+    }
+
     public void startSimulation() throws CloneNotSupportedException {
         System.out.println("Starting HS election simulation...");
         boolean allAcknowledgeLeaders = false;
@@ -24,7 +29,7 @@ public abstract class SimulationService {
 
         while (!allAcknowledgeLeaders) {
             round++;
-            System.out.println("\nStarting Round " + round);
+            PrintBox.printInBox("Round " + round);
 
             allAcknowledgeLeaders = true;
 
@@ -54,6 +59,16 @@ public abstract class SimulationService {
             }
         }
 
-        System.out.println("\nElection completed in " + round + " rounds with " + totalMsg + " messages sent.");
+        System.out.println("\n\nElection completed in " + round + " rounds with " + totalMsg + " messages sent.");
+
+        printNodeStates();
+    }
+
+    private void printNodeStates() {
+        System.out.println("\n\n");
+        PrintBox.printInBox("Final State of Nodes");
+        for (Node node: nodes) {
+            System.out.println(node);
+        }
     }
 }
