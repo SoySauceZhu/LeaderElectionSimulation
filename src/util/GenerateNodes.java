@@ -69,7 +69,7 @@ public class GenerateNodes {
 
     public List<Node> generateRandomLCRNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
-        Node last = new LCRNode(0);
+        Node last = new HSNode(rand.nextInt());
         Node sentinel = last;
         nodes.add(last);
 
@@ -100,7 +100,7 @@ public class GenerateNodes {
 
     public List<Node> generateRandomHSNodes(int numberOfNodes) {
         List<Node> nodes = new ArrayList<>();
-        Node last = new HSNode(0);
+        Node last = new HSNode(rand.nextInt());
         Node sentinel = last;
         nodes.add(last);
 
