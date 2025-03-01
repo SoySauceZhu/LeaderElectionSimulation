@@ -108,10 +108,13 @@ public abstract class Node implements Cloneable {
 
     @Override
     public String toString() {
+        Integer left = getNeighbors().get(LEFT) != null ? getNeighbors().get(LEFT).getId() : null;
+        Integer right = getNeighbors().get(RIGHT) != null ? getNeighbors().get(RIGHT).getId() : null;
         return "Node{" +
                 "id=" + id +
                 ", status=" + nodeType +
                 ", leaderId=" + leaderId +
+                ", neighbours={" + left + ", " + right + "}" +
                 ", terminated=" + terminated +
                 ", messageQueue={" + messageQueueMap.get(LEFT).peek() + ", " + messageQueueMap.get(RIGHT).peek() + "}" +
                 ", phase=" + phase +
