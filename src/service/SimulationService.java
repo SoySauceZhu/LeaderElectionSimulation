@@ -24,7 +24,7 @@ public class SimulationService {
         this.nodes = nodes;
     }
 
-    public void startSimulation() throws CloneNotSupportedException {
+    public void startSimulation(boolean msgLog, boolean nodeLog) throws CloneNotSupportedException {
         System.out.println("Starting HS election simulation...");
         boolean allAcknowledgeLeaders = false;
         int round = 0;
@@ -51,14 +51,18 @@ public class SimulationService {
                     allAcknowledgeLeaders = false;
                 }
 
-                nodeLogs.add(new NodeLog(round, (Node) node.clone()));
-                if (node.getLastSentMessage().get(LEFT) != null) {
-                    totalMsg++;
-                    messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(LEFT).getId(), node.getLastSentMessage().get(LEFT)));
+                if (nodeLog) {
+                    nodeLogs.add(new NodeLog(round, (Node) node.clone()));
                 }
-                if (node.getLastSentMessage().get(RIGHT) != null) {
-                    totalMsg++;
-                    messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(RIGHT).getId(), node.getLastSentMessage().get(RIGHT)));
+                if (msgLog) {
+                    if (node.getLastSentMessage().get(LEFT) != null) {
+                        totalMsg++;
+                        messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(LEFT).getId(), node.getLastSentMessage().get(LEFT)));
+                    }
+                    if (node.getLastSentMessage().get(RIGHT) != null) {
+                        totalMsg++;
+                        messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(RIGHT).getId(), node.getLastSentMessage().get(RIGHT)));
+                    }
                 }
             }
         }

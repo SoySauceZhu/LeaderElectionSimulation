@@ -26,6 +26,14 @@ public class Main {
 
         GenerateNodes generateNodes = new GenerateNodes();
 
+        boolean msgLog = false;
+        System.out.println("Do you want to record Message Log: (y/n)");
+        msgLog = sc.next().equalsIgnoreCase("y");
+
+        boolean nodeLog = false;
+//        System.out.println("Do you want to record Node Log: (y/n)");
+//        nodeLog = sc.next().equalsIgnoreCase("y");
+
         List<Node> nodes = new ArrayList<>();
         switch (choice) {
             case 1:
@@ -63,7 +71,7 @@ public class Main {
 
         System.in.read();
 
-        service.startSimulation();
+        service.startSimulation(msgLog, nodeLog);
 
         service.printNodeStates();
 
