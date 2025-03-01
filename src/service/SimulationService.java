@@ -12,10 +12,13 @@ import java.util.List;
 import static entity.common.Port.LEFT;
 import static entity.common.Port.RIGHT;
 
-public abstract class SimulationService {
+public class SimulationService {
     protected Collection<Node> nodes = new ArrayList<>();
     protected final List<NodeLog> nodeLogs = new ArrayList<>();
     protected final List<MessageLog> messageLogs = new ArrayList<>();
+
+    public SimulationService() {
+    }
 
     public void setNodes(Collection<Node> nodes) {
         this.nodes = nodes;
@@ -66,7 +69,7 @@ public abstract class SimulationService {
 //        printMsgLog();
     }
 
-    private void printNodeStates() {
+    public void printNodeStates() {
         System.out.println("\n\n");
         PrintBox.printInBox("Final State of Nodes");
         for (Node node : nodes) {
@@ -74,7 +77,7 @@ public abstract class SimulationService {
         }
     }
 
-    private void printMsgLog() {
+    public void printMsgLog() {
         System.out.println("\n\n");
         PrintBox.printInBox("MessageLog");
         for (MessageLog messageLog : messageLogs) {
