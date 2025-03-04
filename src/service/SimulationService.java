@@ -17,6 +17,7 @@ public class SimulationService {
     protected Collection<Node> nodes = new ArrayList<>();
     protected final List<NodeLog> nodeLogs = new ArrayList<>();
     protected final List<MessageLog> messageLogs = new ArrayList<>();
+    protected int totalMsg;
 
     public SimulationService() {
     }
@@ -29,7 +30,7 @@ public class SimulationService {
         Logger.info("Starting HS election simulation...");
         boolean allAcknowledgeLeaders = false;
         int round = 0;
-        int totalMsg = 0;
+        totalMsg = 0;
 
         while (!allAcknowledgeLeaders) {
             round++;
@@ -87,5 +88,9 @@ public class SimulationService {
         for (MessageLog messageLog : messageLogs) {
             System.out.println(messageLog);
         }
+    }
+
+    public int getTotalMessages() {
+        return totalMsg;
     }
 }

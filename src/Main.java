@@ -1,14 +1,9 @@
 import entity.common.Node;
-import entity.common.NodeType;
-import service.PerformanceEvaluator;
-import service.SimulationService;
 import util.GenerateNodes;
 import util.Logger;
-import util.PrintBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -28,10 +23,10 @@ public class Main {
             }
             if (log) {
                 Logger.setLevel(Level.FINE);
-            } else  {
+            } else {
                 Logger.setLevel(Level.OFF);
             }
-            PerformanceEvaluator.evaluate(numberOfNodes, clockwise, random, nodeType);
+            runPerformanceEvaluator(numberOfNodes, clockwise, random, nodeType);
         } else {
             System.out.println("Choose an option:");
             System.out.println("1. Interactive Menu");
@@ -91,51 +86,9 @@ public class Main {
                 return;
         }
 
-        SimulationService service = new SimulationService();
-        service.setNodes(nodes);
-
-        PrintBox.printInBox(nodes.size() + " nodes have been created");
-        for (int i = 0; i < nodes.size(); i++) {
-            if (i == 5) {
-                System.out.println("...");
-                break;
-            }
-            System.out.println(nodes.get(i));
-        }
-
-        System.out.println("\nDo you want to show console log info: (y/n)");
-        if (sc.next().equalsIgnoreCase("y")) {
-            Logger.setLevel(Level.FINE);
-        } else {
-            Logger.setLevel(Level.OFF);
-        }
-
-        System.out.println("\nPress any key to continue:\n");
-        System.in.read();
-
-        Runtime runtime = Runtime.getRuntime();
-        runtime.gc();
-
-        long beforeUsedMem = runtime.totalMemory() - runtime.freeMemory();
-        long startTime = System.nanoTime();
-
-        service.startSimulation(msgLog, nodeLog);
-
-        long endTime = System.nanoTime();
-        long duration = endTime - startTime;
-        long afterUsedMem = runtime.totalMemory() - runtime.freeMemory();
-        long memoryUsed = afterUsedMem - beforeUsedMem;
-
-        System.out.println("\n");
-        PrintBox.printInBox(numberOfLeader(nodes) + " leader(s) are elected");
-
-        System.out.println("\n\nExecution time: " + (double) duration / (double) 1_000_000 + " milliseconds");
-        System.out.println("Memory used: " + memoryUsed + " bytes");
-
-        System.out.println("\nDo you want to show final node states: (y/n)");
-        if (sc.next().equalsIgnoreCase("y")) {
-            service.printNodeStates();
-        }
+        Stat stat = new Stat();
+        stat.runSimulation(nodes, msgLog, nodeLog);
+        stat.printStats();
     }
 
     private static void performanceEvaluator() throws CloneNotSupportedException, IOException {
@@ -151,16 +104,26 @@ public class Main {
         System.out.println("Enter node type (LCR/HS):");
         String nodeType = sc.next();
 
-        PerformanceEvaluator.evaluate(numberOfNodes, clockwise, random, nodeType);
+        runPerformanceEvaluator(numberOfNodes, clockwise, random, nodeType);
     }
 
-    private static int numberOfLeader(Collection<Node> nodes) {
-        int leaderNum = 0;
-        for (Node node : nodes) {
-            if (node.getNodeType().equals(NodeType.LEADER)) {
-                leaderNum++;
-            }
+    private static void runPerformanceEvaluator(int numberOfNodes, boolean clockwise, boolean random, String nodeType) throws CloneNotSupportedException, IOException {
+        GenerateNodes generateNodes = new GenerateNodes();
+        List<Node> nodes;
+
+        switch (nodeType) {
+            case "LCR":
+                nodes = random ? generateNodes.generateRandomLCRNodes(numberOfNodes) : generateNodes.generateLCRNodes(numberOfNodes, clockwise);
+                break;
+            case "HS":
+                nodes = random ? generateNodes.generateRandomHSNodes(numberOfNodes) : generateNodes.generateHSNodes(numberOfNodes, clockwise);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid node type");
         }
-        return leaderNum;
+
+        Stat stat = new Stat();
+        stat.runSimulation(nodes, false, false);
+        stat.printStats();
     }
 }
