@@ -36,7 +36,7 @@ To compile and run the project, use the following commands:
 
 ```sh
 javac -d bin src/entity/simulation/*.java src/entity/lcr/*.java
-java -cp bin simulation.LCRNode
+java -cp bin LCRNode
 ```
 ## Artifacts Usage
 
