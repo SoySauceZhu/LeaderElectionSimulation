@@ -79,12 +79,16 @@ public class Stat {
     }
 
     public void runMultipleSimulations() throws CloneNotSupportedException, IOException {
-        int[] nodeCounts = {10, 100, 1000};
+        int[] nodeCounts = java.util.stream.IntStream.rangeClosed(0, 2000).filter(n -> n % 50 == 0).toArray();
+        nodeCounts[0] = 10;
+//        int[] nodeCounts = {10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
         String[] nodeTypes = {"LCR", "HS"};
         boolean[] directions = {true, false}; // true for clockwise, false for counter-clockwise
         boolean[] randoms = {true, false}; // true for random, false for ordered
 
         List<Map<String, Object>> results = new ArrayList<>();
+
+
 
         GenerateNodes generateNodes = new GenerateNodes();
 
@@ -118,27 +122,51 @@ public class Stat {
             }
         }
 
-        StringBuilder json = new StringBuilder();
-        json.append("["); // Start JSON array
+        writeJsonToFile(results, "output.json");
+    }
 
-        for (int i = 0; i < results.size(); i++) {
-            json.append("\"").append(results.get(i)).append("\""); // Add string with quotes
-            if (i < results.size() - 1) {
-                json.append(","); // Add comma for separation
+
+
+    public static void writeJsonToFile(List<Map<String, Object>> data, String filePath) {
+        StringBuilder json = new StringBuilder();
+        json.append("[\n");
+
+        for (int i = 0; i < data.size(); i++) {
+            json.append("  {");
+            Map<String, Object> map = data.get(i);
+            int j = 0;
+
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                json.append("\"").append(entry.getKey()).append("\": ");
+
+                if (entry.getValue() instanceof String) {
+                    json.append("\"").append(entry.getValue()).append("\"");
+                } else {
+                    json.append(entry.getValue());
+                }
+
+                if (++j < map.size()) {
+                    json.append(", ");
+                }
             }
+
+            json.append("}");
+            if (i < data.size() - 1) {
+                json.append(",");
+            }
+            json.append("\n");
         }
 
-        json.append("]"); // End JSON array
+        json.append("]");
 
-        // Write to file
-        try (FileWriter file = new FileWriter("output.json")) {
-            file.write(json.toString());
-            System.out.println("JSON file created successfully!");
+        // Write JSON string to file
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write(json.toString());
+            System.out.println("JSON file written successfully to: " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
     public static void main(String[] args) throws IOException, CloneNotSupportedException {
         Stat stat = new Stat();
         stat.runMultipleSimulations();
