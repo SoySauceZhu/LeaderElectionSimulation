@@ -1,9 +1,13 @@
 import entity.common.Node;
 import entity.common.NodeType;
 import service.SimulationService;
+import util.GenerateNodes;
 import util.PrintBox;
 
-import java.util.Collection;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 public class Stat {
     private long runtime;
@@ -66,5 +70,70 @@ public class Stat {
 
     public int getLeaderCount() {
         return leaderCount;
+    }
+
+    public void runMultipleSimulations() throws CloneNotSupportedException, IOException {
+        int[] nodeCounts = {10, 100, 1000};
+        String[] nodeTypes = {"LCR", "HS"};
+        boolean[] directions = {true, false}; // true for clockwise, false for counter-clockwise
+        boolean[] randoms = {true, false}; // true for random, false for ordered
+
+        List<Map<String, Object>> results = new ArrayList<>();
+
+        GenerateNodes generateNodes = new GenerateNodes();
+
+        for (int count : nodeCounts) {
+            for (String type : nodeTypes) {
+                for (boolean direction : directions) {
+                    for (boolean random : randoms) {
+                        List<Node> nodes;
+                        if (random) {
+                            nodes = type.equals("LCR") ? generateNodes.generateRandomLCRNodes(count) : generateNodes.generateRandomHSNodes(count);
+                        } else {
+                            nodes = type.equals("LCR") ? generateNodes.generateLCRNodes(count, direction) : generateNodes.generateHSNodes(count, direction);
+                        }
+
+                        runSimulation(nodes, false, false);
+
+                        Map<String, Object> result = new HashMap<>();
+                        result.put("nodeCount", count);
+                        result.put("nodeType", type);
+                        result.put("direction", direction ? "clockwise" : "counter-clockwise");
+                        result.put("random", random);
+                        result.put("runtime", getRuntime());
+                        result.put("messageCount", getMessageCount());
+                        result.put("memoryUsage", getMemoryUsage());
+                        result.put("leaderCount", getLeaderCount());
+
+                        results.add(result);
+                    }
+                }
+            }
+        }
+
+        StringBuilder json = new StringBuilder();
+        json.append("["); // Start JSON array
+
+        for (int i = 0; i < results.size(); i++) {
+            json.append("\"").append(results.get(i)).append("\""); // Add string with quotes
+            if (i < results.size() - 1) {
+                json.append(","); // Add comma for separation
+            }
+        }
+
+        json.append("]"); // End JSON array
+
+        // Write to file
+        try (FileWriter file = new FileWriter("output.json")) {
+            file.write(json.toString());
+            System.out.println("JSON file created successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws IOException, CloneNotSupportedException {
+        Stat stat = new Stat();
+        stat.runMultipleSimulations();
     }
 }
