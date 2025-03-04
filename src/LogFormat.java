@@ -1,5 +1,3 @@
-package simulation;
-
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 

@@ -1,13 +1,11 @@
-package simulation;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static simulation.Port.LEFT;
-import static simulation.Port.RIGHT;
 
 public class SimulationService {
+    private Port LEFT = Port.LEFT;
+    private Port RIGHT = Port.RIGHT;
     protected Collection<Node> nodes = new ArrayList<>();
     protected final List<NodeLog> nodeLogs = new ArrayList<>();
     protected final List<MessageLog> messageLogs = new ArrayList<>();

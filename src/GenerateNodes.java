@@ -1,8 +1,4 @@
-package simulation;
-
 import java.util.*;
-
-import static simulation.Port.RIGHT;
 
 public class GenerateNodes {
     private Random rand;
@@ -36,7 +32,7 @@ public class GenerateNodes {
             Node currentNode = nodes.get(i);
             Node nextNode = nodes.get((i + 1) % nodes.size());
             Node prevNode = nodes.get((i - 1 + nodes.size()) % nodes.size());
-            currentNode.setNeighbor(RIGHT, nextNode);
+            currentNode.setNeighbor(Port.RIGHT, nextNode);
             currentNode.setNeighbor(Port.LEFT, prevNode);
         }
 
@@ -63,7 +59,7 @@ public class GenerateNodes {
         for (int i = 0; i < numberOfNodes; i++) {
             Node currentNode = nodes.get(i);
             Node nextNode = nodes.get((i + 1) % nodes.size());
-            currentNode.setNeighbor(RIGHT, nextNode);
+            currentNode.setNeighbor(Port.RIGHT, nextNode);
         }
 
         return nodes;
@@ -91,10 +87,10 @@ public class GenerateNodes {
             int id = idIterator.next();
             Node nextNode = new LCRNode(id);
             nodes.add(nextNode);
-            last.setNeighbor(RIGHT, nextNode);
+            last.setNeighbor(Port.RIGHT, nextNode);
 
             if (!idIterator.hasNext()) {
-                nextNode.setNeighbor(RIGHT, sentinel);
+                nextNode.setNeighbor(Port.RIGHT, sentinel);
             }
             last = nextNode;
         }
@@ -120,11 +116,11 @@ public class GenerateNodes {
             int id = idIterator.next();
             Node nextNode = new HSNode(id);
             nodes.add(nextNode);
-            last.setNeighbor(RIGHT, nextNode);
+            last.setNeighbor(Port.RIGHT, nextNode);
             nextNode.setNeighbor(Port.LEFT, last);
 
             if (!idIterator.hasNext()) {
-                nextNode.setNeighbor(RIGHT, sentinel);
+                nextNode.setNeighbor(Port.RIGHT, sentinel);
                 sentinel.setNeighbor(Port.LEFT, nextNode);
             }
             last = nextNode;

@@ -1,12 +1,8 @@
-package simulation;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import static simulation.Port.LEFT;
-import static simulation.Port.RIGHT;
 
 public abstract class Node implements Cloneable {
     protected final Integer id;
@@ -37,19 +33,19 @@ public abstract class Node implements Cloneable {
     }
 
     protected void clearLastSent() {
-        lastSentMessage.put(RIGHT, null);
-        lastSentMessage.put(LEFT, null);
+        lastSentMessage.put(Port.RIGHT, null);
+        lastSentMessage.put(Port.LEFT, null);
     }
 
     protected void sendMessageTo(Port port, Message message) {
         Logger.info("Node " + id + " sends to " + neighbors.get(port).getId() + " : {" + message + "}");
         if (port.equals(Port.LEFT)) {
-            lastSentMessage.put(LEFT, message);
+            lastSentMessage.put(Port.LEFT, message);
             // Add message to the left neighbor's right message queue
             Node leftNode = neighbors.get(Port.LEFT);
             leftNode.messageQueueMap.get(Port.RIGHT).add(message);
         } else {
-            lastSentMessage.put(RIGHT, message);
+            lastSentMessage.put(Port.RIGHT, message);
             // Add message to the right neighbor's left message queue
             Node rightNode = neighbors.get(Port.RIGHT);
             rightNode.messageQueueMap.get(Port.LEFT).add(message);
@@ -106,17 +102,17 @@ public abstract class Node implements Cloneable {
 
     @Override
     public String toString() {
-        Integer left = getNeighbors().get(LEFT) != null ? getNeighbors().get(LEFT).getId() : null;
-        Integer right = getNeighbors().get(RIGHT) != null ? getNeighbors().get(RIGHT).getId() : null;
+        Integer left = getNeighbors().get(Port.LEFT) != null ? getNeighbors().get(Port.LEFT).getId() : null;
+        Integer right = getNeighbors().get(Port.RIGHT) != null ? getNeighbors().get(Port.RIGHT).getId() : null;
         return "Node{" +
                 "id=" + id +
                 ", status=" + nodeType +
                 ", leaderId=" + leaderId +
                 ", neighbours={" + left + ", " + right + "}" +
                 ", terminated=" + terminated +
-                ", messageQueue={" + messageQueueMap.get(LEFT).peek() + ", " + messageQueueMap.get(RIGHT).peek() + "}" +
+                ", messageQueue={" + messageQueueMap.get(Port.LEFT).peek() + ", " + messageQueueMap.get(Port.RIGHT).peek() + "}" +
                 ", phase=" + phase +
-                ", buffer={" + buffer.get(LEFT) + ", " + buffer.get(RIGHT) + "}";
+                ", buffer={" + buffer.get(Port.LEFT) + ", " + buffer.get(Port.RIGHT) + "}";
     }
 
     @Override

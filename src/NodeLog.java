@@ -1,5 +1,3 @@
-package simulation;
-
 public class NodeLog {
     private final Integer round;
     private final Node node;

@@ -1,5 +1,3 @@
-package simulation;
-
 public class PrintBox {
     public static void printInBox(String input) {
             int length = input.length();

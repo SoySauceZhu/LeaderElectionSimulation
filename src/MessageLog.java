@@ -1,5 +1,3 @@
-package simulation;
-
 public class MessageLog {
     private final Integer round;
     private final Integer sender;

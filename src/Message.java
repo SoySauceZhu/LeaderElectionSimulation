@@ -1,5 +1,3 @@
-package simulation;
-
 public class Message {
     final Integer msgContent;
     final MessageType msgType;

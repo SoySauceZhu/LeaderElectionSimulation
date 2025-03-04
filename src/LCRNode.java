@@ -1,14 +1,12 @@
-package simulation;
-
-import static simulation.MessageType.LEADER_ANNOUNCEMENT;
-import static simulation.MessageType.OUT;
-import static simulation.NodeType.LEADER;
-import static simulation.NodeType.SUBORDINATE;
-import static simulation.Port.LEFT;
-import static simulation.Port.RIGHT;
 
 public class LCRNode extends Node {
     private Integer curMaxId;
+    private final Port LEFT = Port.LEFT;
+    private final Port RIGHT = Port.RIGHT;
+    private final MessageType LEADER_ANNOUNCEMENT = MessageType.LEADER_ANNOUNCEMENT;
+    private final MessageType OUT = MessageType.OUT;
+    private final NodeType LEADER = NodeType.LEADER;
+    private final NodeType SUBORDINATE = NodeType.SUBORDINATE;
 
     public LCRNode(int id) {
         super(id);
