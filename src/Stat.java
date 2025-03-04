@@ -4,7 +4,6 @@ import service.SimulationService;
 import util.GenerateNodes;
 import util.PrintBox;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -14,6 +13,7 @@ public class Stat {
     private int messageCount;
     private long memoryUsage;
     private int leaderCount;
+    private int roundNumber;
 
     public void runSimulation(Collection<Node> nodes, boolean msgLog, boolean nodeLog) throws CloneNotSupportedException {
         SimulationService service = new SimulationService();
@@ -36,6 +36,7 @@ public class Stat {
         this.memoryUsage = memoryUsed;
         this.messageCount = service.getTotalMessages();
         this.leaderCount = numberOfLeader(nodes);
+        this.roundNumber = service.getRound();
     }
 
     private int numberOfLeader(Collection<Node> nodes) {
@@ -54,6 +55,7 @@ public class Stat {
         System.out.println("Memory used: " + memoryUsage + " bytes");
         System.out.println("Number of messages: " + messageCount);
         System.out.println("Number of leaders: " + leaderCount);
+        System.out.println("Number of rounds: " + roundNumber);
     }
 
     public long getRuntime() {
@@ -70,6 +72,10 @@ public class Stat {
 
     public int getLeaderCount() {
         return leaderCount;
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
     }
 
     public void runMultipleSimulations() throws CloneNotSupportedException, IOException {
@@ -104,6 +110,7 @@ public class Stat {
                         result.put("messageCount", getMessageCount());
                         result.put("memoryUsage", getMemoryUsage());
                         result.put("leaderCount", getLeaderCount());
+                        result.put("roundNumber", getRoundNumber());
 
                         results.add(result);
                     }

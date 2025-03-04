@@ -19,6 +19,12 @@ public class SimulationService {
     protected final List<MessageLog> messageLogs = new ArrayList<>();
     protected int totalMsg;
 
+    public int getRound() {
+        return round;
+    }
+
+    protected int round;
+
     public SimulationService() {
     }
 
@@ -29,7 +35,7 @@ public class SimulationService {
     public void startSimulation(boolean msgLog, boolean nodeLog) throws CloneNotSupportedException {
         Logger.info("Starting HS election simulation...");
         boolean allAcknowledgeLeaders = false;
-        int round = 0;
+        round = 0;
         totalMsg = 0;
 
         while (!allAcknowledgeLeaders) {
@@ -93,4 +99,5 @@ public class SimulationService {
     public int getTotalMessages() {
         return totalMsg;
     }
+
 }
