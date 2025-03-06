@@ -116,22 +116,6 @@ public class Main {
         System.in.read();
     }
 
-    private static void performanceEvaluator() throws CloneNotSupportedException, IOException {
-        System.out.println("Enter the number of nodes:");
-        int numberOfNodes = sc.nextInt();
-
-        System.out.println("Clockwise? (true/false):");
-        boolean clockwise = sc.nextBoolean();
-
-        System.out.println("Random nodes? (true/false):");
-        boolean random = sc.nextBoolean();
-
-        System.out.println("Enter node type (LCR/HS):");
-        String nodeType = sc.next();
-
-        runPerformanceEvaluator(numberOfNodes, clockwise, random, nodeType);
-    }
-
     private static void runPerformanceEvaluator(int numberOfNodes, boolean clockwise, boolean random, String nodeType) throws CloneNotSupportedException, IOException {
         GenerateNodes generateNodes = new GenerateNodes();
         List<Node> nodes;

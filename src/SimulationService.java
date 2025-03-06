@@ -3,8 +3,6 @@ import java.util.Collection;
 
 
 public class SimulationService {
-    private Port LEFT = Port.LEFT;
-    private Port RIGHT = Port.RIGHT;
     protected Collection<Node> nodes = new ArrayList<>();
     protected int totalMsg;
 
@@ -48,12 +46,8 @@ public class SimulationService {
                     allAcknowledgeLeaders = false;
                 }
 
-                if (node.getLastSentMessage().get(LEFT) != null) {
-                    totalMsg++;
-                }
-                if (node.getLastSentMessage().get(RIGHT) != null) {
-                    totalMsg++;
-                }
+                totalMsg += node.lastSendMessageCount();
+
             }
         }
 

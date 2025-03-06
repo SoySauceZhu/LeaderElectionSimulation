@@ -4,13 +4,8 @@ import java.util.Map;
 import java.util.Queue;
 
 public abstract class Node implements Cloneable {
-    private final MessageType OUT = MessageType.OUT;
-    private final MessageType IN = MessageType.IN;
-    private final MessageType LEADER_ANNOUNCEMENT = MessageType.LEADER_ANNOUNCEMENT;
     private final Port LEFT = Port.LEFT;
     private final Port RIGHT = Port.RIGHT;
-    private final NodeType LEADER = NodeType.LEADER;
-    private final NodeType SUBORDINATE = NodeType.SUBORDINATE;
 
 
     protected final Integer id;
@@ -21,11 +16,9 @@ public abstract class Node implements Cloneable {
     protected Map<Port, Queue<Message>> messageQueueMap = new HashMap<>();
     protected Map<Port, Message> buffer = new HashMap<>();
     protected Map<Port, Message> lastSentMessage = new HashMap<>();
-    protected Integer phase;
 
     public Node(int id) {
         this.id = id;
-        this.phase = 0;
         messageQueueMap.put(Port.LEFT, new LinkedList<>());
         messageQueueMap.put(Port.RIGHT, new LinkedList<>());
     }
@@ -104,8 +97,15 @@ public abstract class Node implements Cloneable {
         return lastSentMessage;
     }
 
-    public Integer getPhase() {
-        return phase;
+    public int lastSendMessageCount() {
+        int num = 0;
+        if (getLastSentMessage().get(LEFT) != null) {
+            num++;
+        }
+        if (getLastSentMessage().get(RIGHT) != null) {
+            num++;
+        }
+        return num;
     }
 
     @Override
@@ -119,7 +119,6 @@ public abstract class Node implements Cloneable {
                 ", neighbours={" + left + ", " + right + "}" +
                 ", terminated=" + terminated +
                 ", messageQueue={" + messageQueueMap.get(LEFT).peek() + ", " + messageQueueMap.get(RIGHT).peek() + "}" +
-                ", phase=" + phase +
                 ", buffer={" + buffer.get(LEFT) + ", " + buffer.get(RIGHT) + "}";
     }
 

@@ -6,6 +6,7 @@ public class HSNode extends Node {
     private final Port RIGHT = Port.RIGHT;
     private final NodeType LEADER = NodeType.LEADER;
     private final NodeType SUBORDINATE = NodeType.SUBORDINATE;
+    private int phase;
 
     public HSNode(int id) {
         super(id);
