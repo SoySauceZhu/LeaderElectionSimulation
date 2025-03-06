@@ -1,14 +1,11 @@
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 
 public class SimulationService {
     private Port LEFT = Port.LEFT;
     private Port RIGHT = Port.RIGHT;
     protected Collection<Node> nodes = new ArrayList<>();
-    protected final List<NodeLog> nodeLogs = new ArrayList<>();
-    protected final List<MessageLog> messageLogs = new ArrayList<>();
     protected int totalMsg;
 
     public int getRound() {
@@ -51,20 +48,11 @@ public class SimulationService {
                     allAcknowledgeLeaders = false;
                 }
 
-                if (nodeLog) {
-                    nodeLogs.add(new NodeLog(round, (Node) node.clone()));
-                }
                 if (node.getLastSentMessage().get(LEFT) != null) {
                     totalMsg++;
-                    if (msgLog) {
-                        messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(LEFT).getId(), node.getLastSentMessage().get(LEFT)));
-                    }
                 }
                 if (node.getLastSentMessage().get(RIGHT) != null) {
                     totalMsg++;
-                    if (msgLog) {
-                        messageLogs.add(new MessageLog(round, node.getId(), node.getNeighbors().get(RIGHT).getId(), node.getLastSentMessage().get(RIGHT)));
-                    }
                 }
             }
         }
@@ -80,13 +68,6 @@ public class SimulationService {
         }
     }
 
-    public void printMsgLog() {
-        System.out.println("\n\n");
-        PrintBox.printInBox("MessageLog");
-        for (MessageLog messageLog : messageLogs) {
-            System.out.println(messageLog);
-        }
-    }
 
     public int getTotalMessages() {
         return totalMsg;
